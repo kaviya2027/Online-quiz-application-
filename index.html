@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Quiz Application</title>
+    <style>
+/* === CSS START === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: Arial, Helvetica, sans-serif; background: #f5f7ff; color: #24304a; line-height: 1.6; }
+.hidden { display: none !important; }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background: #ffffff; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 100; }
+.logo { font-size: 24px; font-weight: bold; color: #2455d6; }
+nav { display: flex; gap: 30px; }
+nav a { text-decoration: none; color: #35415c; font-weight: 600; }
+.hero { display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 50px; padding: 85px 8%; background: linear-gradient(135deg, #eef3ff, #ffffff); }
+.tagline { color: #3569e8; font-size: 13px; font-weight: bold; letter-spacing: 2px; margin-bottom: 15px; }
+.hero-content h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.2; margin-bottom: 22px; color: #172957; }
+.hero-content > p:not(.tagline) { color: #68738a; max-width: 550px; margin-bottom: 30px; font-size: 17px; }
+.primary-btn, .secondary-btn, .submit-btn { border: none; border-radius: 9px; padding: 14px 22px; font-size: 15px; font-weight: bold; text-decoration: none; display: inline-block; transition: 0.2s; cursor: pointer; }
+.primary-btn { background: #2864e8; color: white; }
+.secondary-btn { background: #edf1fb; color: #254b9b; }
+.submit-btn { background: #14804a; color: white; }
+.hero-card { padding: 35px 25px; background: white; border-radius: 24px; text-align: center; box-shadow: 0 15px 45px rgba(30, 60, 120, 0.12); border: 1px solid #edf0f8; }
+.hero-stats { display: flex; justify-content: space-around; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #edf0f8; }
+.hero-stats h3 { color: #2864e8; font-size: 21px; }
+.categories-section { padding: 80px 8%; }
+.section-heading { text-align: center; max-width: 650px; margin: 0 auto 45px; }
+.section-heading h2 { color: #192b55; font-size: 34px; margin-bottom: 12px; }
+.category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+.category-card { background: white; padding: 30px 25px; border: 1px solid #e9edf7; border-radius: 18px; box-shadow: 0 5px 20px rgba(35, 60, 110, 0.04); }
+.category-card button { width: 100%; border: none; border-radius: 8px; padding: 13px; color: white; background: #2864e8; font-weight: bold; cursor:pointer; }
+.quiz-section { padding: 65px 5%; background: #edf2ff; min-height: 650px; }
+.quiz-container { max-width: 850px; margin: auto; background: white; padding: 35px; border-radius: 20px; box-shadow: 0 12px 35px rgba(35, 60, 110, 0.1); }
+.quiz-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.timer-box { background: #fff1e8; color: #c15a1a; border-radius: 12px; padding: 12px 20px; text-align: center; min-width: 110px; }
+.timer-box.warning { background: #ffe0e0; color: #bd2424; }
+.progress-info { display: flex; justify-content: space-between; margin-bottom: 10px; color: #68738a; font-size: 14px; }
+.progress-bar { width: 100%; height: 9px; background: #e9edf7; border-radius: 20px; overflow: hidden; margin-bottom: 30px; }
+#progress-fill { height: 100%; width: 0; background: #2864e8; border-radius: 20px; transition: width 0.3s; }
+.question-card { background: #fbfcff; border: 1px solid #e7ebf5; border-radius: 15px; padding: 25px; }
+.option { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; background: white; border: 2px solid #e5eaf5; border-radius: 10px; padding: 15px; margin-bottom: 12px; cursor:pointer; }
+.option.selected { border-color: #2864e8; background: #edf3ff; color: #174bc4; font-weight: bold; }
+.result-section { padding: 65px 5%; background: #edf2ff; }
+.result-card { max-width: 750px; margin: auto; padding: 40px; background: white; border-radius: 22px; text-align: center; }
+.score-circle { width: 165px; height: 165px; border-radius: 50%; background: conic-gradient(#2864e8 0deg, #e8edf7 0deg); display: grid; place-items: center; margin: 30px auto; position: relative; }
+.score-circle::before { content: ""; position: absolute; width: 135px; height: 135px; background: white; border-radius: 50%; }
+.score-circle > div { position: relative; z-index: 1; }
+.result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 30px 0; }
+.result-stat { padding: 20px 10px; background: #f4f6fc; border-radius: 12px; }
+.review-item { padding: 18px; border: 1px solid #e7ebf5; border-radius: 12px; margin-bottom: 15px; text-align:left; }
+.correct-text { color: #14804a; } .wrong-text { color: #c62828; }
+footer { background: #152449; color: white; text-align: center; padding: 35px 20px; }
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } .category-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .category-grid { grid-template-columns: 1fr; } .quiz-container { padding: 22px 16px; } }
+/* === CSS END === */
+    </style>
+</head>
+<body>
+    <header class="navbar"><div class="logo">QuizMaster</div><nav><a href="#home">Home</a><a href="#categories">Categories</a><a href="#about">About</a></nav></header>
+    <section id="home" class="hero">
+        <div class="hero-content"><p class="tagline">LEARN • PLAY • IMPROVE</p><h1>Test Your Knowledge<br>With Online Quizzes</h1><p>Challenge yourself with interactive quizzes. Choose your favorite category, answer questions, and discover your knowledge level.</p><a href="#categories" class="primary-btn">Start Your Quiz →</a></div>
+        <div class="hero-card"><div class="brain">🧠</div><h2>Ready to Challenge Yourself?</h2><p>Learn something new with every question.</p><div class="hero-stats"><div><h3>5</h3><span>Categories</span></div><div><h3>MCQ</h3><span>Questions</span></div><div><h3>100%</h3><span>Focus</span></div></div></div>
+    </section>
+    <section id="categories" class="categories-section">
+        <div class="section-heading"><p class="tagline">CHOOSE YOUR CHALLENGE</p><h2>Explore Quiz Categories</h2><p>Select a subject and begin your quiz. Answer every question before the timer ends.</p></div>
+        <div class="category-grid">
+            <div class="category-card"><div class="category-icon">📘</div><h3>HTML</h3><p>Test your knowledge of HTML tags and web structure.</p><button onclick="startQuiz('html')">Start Quiz →</button></div>
+            <div class="category-card"><div class="category-icon">🎨</div><h3>CSS</h3><p>Explore styling, layouts, colors, and selectors.</p><button onclick="startQuiz('css')">Start Quiz →</button></div>
+            <div class="category-card"><div class="category-icon">⚙️</div><h3>JavaScript</h3><p>Check your knowledge of programming fundamentals.</p><button onclick="startQuiz('javascript')">Start Quiz →</button></div>
+            <div class="category-card"><div class="category-icon">🐍</div><h3>Python</h3><p>Practice Python syntax and basic programming.</p><button onclick="startQuiz('python')">Start Quiz →</button></div>
+            <div class="category-card"><div class="category-icon">🌍</div><h3>General Knowledge</h3><p>Answer questions about science, geography, and more.</p><button onclick="startQuiz('general')">Start Quiz →</button></div>
+        </div>
+    </section>
+    <section id="quiz-section" class="quiz-section hidden"><div class="quiz-container"><div class="quiz-top"><div><p class="tagline">ONLINE QUIZ</p><h2 id="quiz-title">HTML Quiz</h2></div><div class="timer-box"><span>⏱ Time Left</span><h3 id="timer">05:00</h3></div></div><div class="progress-info"><span id="question-number">Question 1 of 10</span><span id="progress-percent">10%</span></div><div class="progress-bar"><div id="progress-fill"></div></div><div class="question-card"><h3 id="question-text"></h3><div id="options-container"></div></div><div class="quiz-buttons" style="display:flex; justify-content:space-between; gap:12px; margin-top:25px;"><button id="prev-btn" class="secondary-btn" onclick="previousQuestion()">← Previous</button><button id="next-btn" class="primary-btn" onclick="nextQuestion()">Next →</button><button id="submit-btn" class="submit-btn hidden" onclick="submitQuiz(false)">Submit Quiz</button></div><p id="quiz-message" class="message"></p></div></section>
+    <section id="result-section" class="result-section hidden"><div class="result-card"><div class="result-icon" id="result-icon">🎉</div><p class="tagline">QUIZ COMPLETED</p><h1 id="result-heading">Excellent Work!</h1><p id="result-message"></p><div class="score-circle" id="score-circle"><div><h2 id="percentage">0%</h2><p>Percentage</p></div></div><div class="result-stats"><div class="result-stat"><span>Total Questions</span><h3 id="total-questions">10</h3></div><div class="result-stat"><span>Correct Answers</span><h3 id="correct-answers">0</h3></div><div class="result-stat"><span>Wrong / Unanswered</span><h3 id="wrong-answers">0</h3></div></div><div class="result-buttons"><button class="primary-btn" onclick="reviewAnswers()">Review Answers</button><button class="secondary-btn" onclick="restartQuiz()">Try Again</button><button class="secondary-btn" onclick="goHome()">Home</button></div><div id="review-container" class="review-container hidden"></div></div></section>
+    <section id="about" class="about-section" style="padding:80px 10%; text-align:center;"><p class="tagline">ABOUT OUR PROJECT</p><h2>Learn Better Through Practice</h2><p>The Online Quiz Application is an interactive web-based learning platform developed using HTML, CSS, and JavaScript.</p></section>
+    <footer><h3>QuizMaster</h3><p>Online Quiz Application | Student Project</p><p>© 2026 QuizMaster. All rights reserved.</p></footer>
+
+<script>
+// === FULL JAVASCRIPT FROM PDF ===
+const quizData = {
+html: [
+{ question: "What does HTML stand for?", options: ["Hyper Text Markup Language","High Text Machine Language","Hyperlinks and Text Markup Language","Home Tool Markup Language"], answer: 0 },
+{ question: "Which tag is used for the largest heading?", options: ["<h6>","<head>","<h1>","<heading>"], answer: 2 },
+{ question: "Which tag creates a hyperlink?", options: ["<link>","<a>","<href>","<url>"], answer: 1 },
+{ question: "Which tag inserts an image?", options: ["<picture>","<image>","<src>","<img>"], answer: 3 },
+{ question: "Which tag creates a paragraph?", options: ["<p>","<para>","<text>","<pg>"], answer: 0 },
+{ question: "Which attribute specifies an image location?", options: ["href","src","alt","link"], answer: 1 },
+{ question: "Which tag creates an unordered list?", options: ["<ol>","<li>","<ul>","<list>"], answer: 2 },
+{ question: "Which tag is used to create a table row?", options: ["<td>","<th>","<table-row>","<tr>"], answer: 3 },
+{ question: "Which attribute provides alternative image text?", options: ["alt","title","name","text"], answer: 0 },
+{ question: "Which declaration identifies an HTML5 document?", options: ["<html5>","<!DOCTYPE html>","<document html>","<doctype>"], answer: 1 }
+],
+css: [
+{ question: "What does CSS stand for?", options: ["Computer Style Sheets","Creative Style System","Cascading Style Sheets","Colorful Style Sheets"], answer: 2 },
+{ question: "Which property changes text color?", options: ["font-color","text-color","background","color"], answer: 3 },
+{ question: "Which symbol selects an element by ID?", options: ["#",".","*","$"], answer: 0 },
+{ question: "Which property changes the background color?", options: ["color","background-color","bgcolor","fill"], answer: 1 },
+{ question: "Which property controls text size?", options: ["font-size","text-style","size","font-weight"], answer: 0 },
+{ question: "Which symbol selects a class in CSS?", options: ["#","@",".","&"], answer: 2 },
+{ question: "Which CSS layout is useful for one-dimensional layouts?", options: ["Float","Flexbox","Border","Outline"], answer: 1 },
+{ question: "Which property adds space inside an element's border?", options: ["margin","spacing","padding","gap"], answer: 2 },
+{ question: "Which property makes text bold?", options: ["font-weight","text-bold","font-style","bold"], answer: 0 },
+{ question: "Which property rounds an element's corners?", options: ["corner","border-style","round","border-radius"], answer: 3 }
+],
+javascript: [
+{ question: "Which keyword declares a block-scoped variable?", options: ["varname","let","define","integer"], answer: 1 },
+{ question: "Which symbol is used for strict equality?", options: ["=","==","===","!="], answer: 2 },
+{ question: "Which function displays a message in the console?", options: ["print()","display()","write()","console.log()"], answer: 3 },
+{ question: "Which keyword declares a constant?", options: ["const","constant","fixed","static"], answer: 0 },
+{ question: "Which method selects an element by its ID?", options: ["getElementById()","getClass()","selectId()","findElement()"], answer: 0 },
+{ question: "Which symbol is used for a single-line comment?", options: ["<!-- -->","**","//","##"], answer: 2 },
+{ question: "Which method adds an item to the end of an array?", options: ["push()","pop()","shift()","join()"], answer: 0 },
+{ question: "What is the result of 2 + '3' in JavaScript?", options: ["5","23","NaN","Error"], answer: 1 },
+{ question: "Which keyword defines a function?", options: ["func","method","function","define"], answer: 2 },
+{ question: "Which event occurs when a user clicks an element?", options: ["onhover","onchange","onload","onclick"], answer: 3 }
+],
+python: [
+{ question: "Who created Python?", options: ["James Gosling","Guido van Rossum","Dennis Ritchie","Bjarne Stroustrup"], answer: 1 },
+{ question: "Which function displays output in Python?", options: ["echo()","display()","print()","show()"], answer: 2 },
+{ question: "Which symbol starts a single-line comment?", options: ["#","//","/*","--"], answer: 0 },
+{ question: "Which data type stores True or False?", options: ["String","Integer","Float","Boolean"], answer: 3 },
+{ question: "Which brackets are commonly used to create a list?", options: ["()","[]","{}","<>"], answer: 1 },
+{ question: "Which keyword defines a function?", options: ["function","fun","def","define"], answer: 2 },
+{ question: "Which operator calculates a remainder?", options: ["%","/","//","**"], answer: 0 },
+{ question: "Which keyword starts a conditional statement?", options: ["when","check","case","if"], answer: 3 },
+{ question: "Which method converts text to uppercase?", options: ["upper()","capitalize_all()","uppercase()","up()"], answer: 0 },
+{ question: "Which file extension is commonly used for Python files?", options: [".html",".py",".css",".java"], answer: 1 }
+],
+general: [
+{ question: "What is the capital of India?", options: ["Mumbai","Chennai","New Delhi","Kolkata"], answer: 2 },
+{ question: "Which planet is known as the Red Planet?", options: ["Venus","Mars","Jupiter","Saturn"], answer: 1 },
+{ question: "How many days are there in a leap year?", options: ["364","365","367","366"], answer: 3 },
+{ question: "Which gas do plants absorb during photosynthesis?", options: ["Carbon dioxide","Oxygen","Nitrogen","Hydrogen"], answer: 0 },
+{ question: "What is the largest ocean on Earth?", options: ["Atlantic Ocean","Indian Ocean","Pacific Ocean","Arctic Ocean"], answer: 2 },
+{ question: "How many continents are commonly recognized?", options: ["Five","Seven","Six","Eight"], answer: 1 },
+{ question: "Which organ pumps blood through the human body?", options: ["Lungs","Brain","Kidneys","Heart"], answer: 3 },
+{ question: "What is the chemical formula of water?", options: ["H2O","CO2","O2","NaCl"], answer: 0 },
+{ question: "Which is the closest star to Earth?", options: ["Sirius","Polaris","The Sun","Alpha Centauri"], answer: 2 },
+{ question: "Which instrument is used to measure temperature?", options: ["Barometer","Thermometer","Compass","Speedometer"], answer: 1 }
+]
+};
+let currentCategory = ""; let currentQuestions = []; let currentIndex = 0; let userAnswers = []; let timeLeft = 300; let timerInterval = null; let quizFinished = false;
+const quizSection = document.getElementById("quiz-section"); const resultSection = document.getElementById("result-section"); const questionText = document.getElementById("question-text"); const optionsContainer = document.getElementById("options-container"); const timerElement = document.getElementById("timer"); const timerBox = document.querySelector(".timer-box"); const questionNumber = document.getElementById("question-number"); const progressPercent = document.getElementById("progress-percent"); const progressFill = document.getElementById("progress-fill"); const prevButton = document.getElementById("prev-btn"); const nextButton = document.getElementById("next-btn"); const submitButton = document.getElementById("submit-btn"); const quizMessage = document.getElementById("quiz-message");
+function shuffleQuestions(questions) {
+  const shuffled = questions.map(q => ({...q, options: [...q.options]}));
+  shuffled.forEach(q => { const correctAnswer = q.options[q.answer]; for (let i = q.options.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [q.options[i], q.options[j]] = [q.options[j], q.options[i]]; } q.answer = q.options.indexOf(correctAnswer); });
+  for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+  return shuffled;
+}
+function startQuiz(category) {
+  if (!quizData[category]) { alert("Please select a valid quiz category."); return; }
+  clearInterval(timerInterval); currentCategory = category; currentQuestions = shuffleQuestions(quizData[category]); currentIndex = 0; userAnswers = new Array(currentQuestions.length).fill(null); timeLeft = 300; quizFinished = false;
+  const categoryNames = { html: "HTML Quiz", css: "CSS Quiz", javascript: "JavaScript Quiz", python: "Python Quiz", general: "General Knowledge Quiz" };
+  document.getElementById("quiz-title").textContent = categoryNames[category]; quizMessage.textContent = ""; document.getElementById("review-container").classList.add("hidden"); resultSection.classList.add("hidden"); quizSection.classList.remove("hidden"); renderQuestion(); updateTimer(); startTimer(); quizSection.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function renderQuestion() {
+  if (quizFinished) return; const question = currentQuestions[currentIndex]; questionText.textContent = question.question; optionsContainer.innerHTML = "";
+  question.options.forEach((option, index) => { const button = document.createElement("button"); button.type = "button"; button.className = "option"; if (userAnswers[currentIndex] === index) button.classList.add("selected"); const letter = document.createElement("span"); letter.className = "option-letter"; letter.textContent = String.fromCharCode(65 + index); letter.style.cssText="display:flex;align-items:center;justify-content:center;min-width:32px;height:32px;background:#edf1fa;border-radius:7px;font-weight:bold;"; const text = document.createElement("span"); text.textContent = option; button.appendChild(letter); button.appendChild(text); button.addEventListener("click", function () { selectAnswer(index); }); optionsContainer.appendChild(button); });
+  questionNumber.textContent = `Question ${currentIndex + 1} of ${currentQuestions.length}`; const progress = ((currentIndex + 1) / currentQuestions.length) * 100; progressPercent.textContent = `${Math.round(progress)}%`; progressFill.style.width = `${progress}%`; prevButton.disabled = currentIndex === 0; prevButton.style.opacity = currentIndex === 0 ? "0.5" : "1"; nextButton.classList.toggle("hidden", currentIndex === currentQuestions.length - 1); submitButton.classList.toggle("hidden", currentIndex !== currentQuestions.length - 1); quizMessage.textContent = "";
+}
+func
